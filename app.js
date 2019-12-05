@@ -68,10 +68,10 @@ app.post('/users/add',jsonParser, (req,res)=>{
 // 增加新的司机
 app.post('/drivers/add' ,jsonParser, (req,res)=>{
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
-    const {First_Name,Last_Name,Mobile,Address,City,PostalCode,description} = req.body;
-    const INSERT_DRIVER_APPLICATION = `INSERT INTO driver_application (first_Name,
+    const {Area,First_Name,Last_Name,Mobile,Address,City,PostalCode,description} = req.body;
+    const INSERT_DRIVER_APPLICATION = `INSERT INTO driver_application (area,first_Name,
         last_Name,phone,street_address,city,postal_code,self_comment) 
-        VALUES('${First_Name}','${Last_Name}','${Mobile}','${Address}','${City}','${PostalCode}','${description}')`;
+        VALUES('${Area}','${First_Name}','${Last_Name}','${Mobile}','${Address}','${City}','${PostalCode}','${description}')`;
         
     db.query(INSERT_DRIVER_APPLICATION,(err,results)=>{
         if(err){
