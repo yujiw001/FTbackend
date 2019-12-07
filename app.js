@@ -71,14 +71,50 @@ app.post('/drivers/add' ,jsonParser, (req,res)=>{
     const {Area,First_Name,Last_Name,Mobile,Address,City,PostalCode,description} = req.body;
     const INSERT_DRIVER_APPLICATION = `INSERT INTO driver_application (area,first_Name,
         last_Name,phone,street_address,city,postal_code,self_comment) 
-        VALUES('${Area}','${First_Name}','${Last_Name}','${Mobile}','${Address}','${City}','${PostalCode}','${description}')`;
-        
+        VALUES('${Area}','${First_Name}','${Last_Name}','${Mobile}','${Address}','${City}','${PostalCode}','${description}')`;   
     db.query(INSERT_DRIVER_APPLICATION,(err,results)=>{
         if(err){
             return res.send(err)
         }
         else{
             return res.send('插入成功')
+        }
+    });
+});
+//插入意向地区
+app.post('/drivers/desiredarea',jsonParser,(req,res)=>{
+    const{DriverID,LAN_MARK,DesiredArea} = req.body;
+    let data = [];
+    for(i=0 ;i<DesiredArea.length;++i){
+        data.push([DriverID,LAN_MARK,DesiredArea[i]])
+        console.log(data);
+    }
+    console.log(data);
+    const INSERT_DESIREAREA = "INSERT INTO preferred_area(join_us_id,lan_mark,desired_area) VALUES ?";
+    db.query(INSERT_DESIREAREA,[data],(err,results)=>{
+        if(err){
+            return res.send('插入失败')
+        }
+        else{
+            return res.send('插入成功')
+        }
+    })
+})
+
+//获取当前大表的id
+app.get('/driverid',(req,res)=>{
+    const SELECT_DRIVERID = `SELECT MAX(id) FROM driver_application `;
+    db.query(SELECT_DRIVERID,(err,result)=>{
+        if(err){
+            console.log("找id时出现错误")
+            return res.send(err)
+        }
+        else{
+            console.log("找id成功")
+            var target=JSON.stringify(result[0])
+            console.log(target);
+            console.log(JSON.parse(target)["MAX(id)"]);
+            return res.send(result[0]);
         }
     });
 });
