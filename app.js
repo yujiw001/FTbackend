@@ -1,9 +1,12 @@
 const express = require('express');
+
+const fileUpload = require('express-fileupload');
 const mysql = require('mysql');
 const app = express();
+app.use(fileUpload());
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
-
+var multer = require('multer')
 //Create connection
 const target =3;
 const trash =3;
@@ -90,17 +93,68 @@ app.post('/drivers/desiredarea',jsonParser,(req,res)=>{
         console.log(data);
     }
     console.log(data);
+    // const RESET_PRIMARYKEY = "ALTER TABLE preferred_area AUTO_INCREMENT=1;"
     const INSERT_DESIREAREA = "INSERT INTO preferred_area(join_us_id,lan_mark,desired_area) VALUES ?";
+    // db.query(RESET_PRIMARYKEY,(err,results)=> {
+    //     if(err){
+    //         return res.send('重置主键失败')
+    //     }
+    //     db.query(INSERT_DESIREAREA,[data],(err,results)=>{
+    //         if(err){
+    //             return res.send('地点插入失败')
+    //         }
+    //         else{
+    //             return res.send('地点插入成功')
+    //         }
+    //     })
+    // })
     db.query(INSERT_DESIREAREA,[data],(err,results)=>{
         if(err){
-            return res.send('插入失败')
+            return res.send('地点插入失败')
         }
         else{
-            return res.send('插入成功')
+            return res.send('地点插入成功')
         }
     })
 })
-
+//可选时间
+app.post('/drivers/availabletime',jsonParser,(req,res)=>{
+    const{DriverID,LAN_MARK,AvailableTime} = req.body;
+    let data = [];
+    for(i=0 ;i<AvailableTime.length;++i){
+        data.push([DriverID,LAN_MARK,AvailableTime[i]])
+        console.log(data);
+    }
+    console.log(data);
+    const INSERT_AVAILABLETIME = "INSERT INTO available_work_time(join_us_id,lan_mark,available_time) VALUES ?";
+    db.query(INSERT_AVAILABLETIME,[data],(err,results)=>{
+        if(err){
+            return res.send('时间插入失败')
+        }
+        else{
+            return res.send('时间插入成功')
+        }
+    })
+})
+//增加出行方式
+app.post('/drivers/transportation',jsonParser,(req,res)=>{
+    const{DriverID,LAN_MARK,Transportation} = req.body;
+    let data = [];
+    for(i=0 ;i<Transportation.length;++i){
+        data.push([DriverID,LAN_MARK,Transportation[i]])
+        console.log(data);
+    }
+    console.log(data);
+    const INSERT_TRANSPORTATION = "INSERT INTO transportation_method(join_us_id,lan_mark,transportation) VALUES ?";
+    db.query(INSERT_TRANSPORTATION,[data],(err,results)=>{
+        if(err){
+            return res.send('出行方式插入失败')
+        }
+        else{
+            return res.send('出行方式插入成功')
+        }
+    })
+})
 //获取当前大表的id
 app.get('/driverid',(req,res)=>{
     const SELECT_DRIVERID = `SELECT MAX(id) FROM driver_application `;
@@ -117,6 +171,17 @@ app.get('/driverid',(req,res)=>{
             return res.send(result[0]);
         }
     });
+});
+
+app.post('/uploadfile',(req,res) => {
+    if(req.file === null) {
+        return res.status(400).json({msg:'No file uploaded'});
+    }
+    else {
+        console.log('file received');
+        console.log(req);
+        var sql = "INSERT INTO driver_application(resume) VALUES ('"+ req.file + "')";
+    }
 });
 //增加工作时间
 // app.get('/drivers/availabletime' , (req,res)=>{
