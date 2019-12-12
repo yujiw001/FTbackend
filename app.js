@@ -172,7 +172,7 @@ app.get('/driverid',(req,res)=>{
         }
     });
 });
-
+//上传文件
 app.post('/uploadfile',(req,res) => {
     if(req.file === null) {
         return res.status(400).json({msg:'No file uploaded'});
@@ -183,6 +183,73 @@ app.post('/uploadfile',(req,res) => {
         var sql = "INSERT INTO driver_application(resume) VALUES ('"+ req.file + "')";
     }
 });
+//增加新的伙伴合作
+app.post('/partner/add' ,jsonParser, (req,res)=>{
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+    console.log('后台已响应')
+    const {Area,First_Name,Last_Name,Mobile,Email,Bname,Address,City,PostalCode,Category,description} = req.body;
+    const INSERT_PARTNER_APPLICATION = `INSERT INTO partner_application (area,first_name,
+        last_name,phone,email,business_name,street_address,city,postal_code,business_category,business_description) 
+        VALUES('${Area}','${First_Name}','${Last_Name}','${Mobile}','${Email}','${Bname}','${Address}','${City}','${PostalCode}','${Category}','${description}')`;   
+    db.query(INSERT_PARTNER_APPLICATION,(err,results)=>{
+        if(err){
+            return res.send(err)
+        }
+        else{
+            return res.send('伙伴插入成功')
+        }
+    });
+});
+//增加新的广告投放
+app.post('/advertisement/add' ,jsonParser, (req,res)=>{
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+    console.log('后台已响应')
+    const {Area,First_Name,Last_Name,Mobile,Email,Bname,Address,City,PostalCode,Category,description} = req.body;
+    const INSERT_ADVERTISEMENT_APPLICATION = `INSERT INTO advertisement_application (area,first_name,
+        last_name,phone,email,business_name,street_address,city,postal_code,business_category,business_description) 
+        VALUES('${Area}','${First_Name}','${Last_Name}','${Mobile}','${Email}','${Bname}','${Address}','${City}','${PostalCode}','${Category}','${description}')`;   
+    db.query(INSERT_ADVERTISEMENT_APPLICATION,(err,results)=>{
+        if(err){
+            return res.send(err)
+        }
+        else{
+            return res.send('广告伙伴插入成功')
+        }
+    });
+});
+
+//后台新闻编辑插入
+app.post('/news/add' ,jsonParser, (req,res)=>{
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+    console.log("新闻后台已经响应")
+    const {user,type,lan_mark,title,cover,content} = req.body;
+    console.log(req.body);
+    console.log(type);
+    const INSERT_NEWS_EDITOR = `INSERT INTO article (user,type,lan_mark,title,cover,content) VALUES('${user}','${type}','${lan_mark}','${title}','${cover}','${content}')`;   
+    db.query(INSERT_NEWS_EDITOR,(err,results)=>{
+        if(err){
+            return res.send(err)
+        }
+        else{
+            return res.send('新闻插入成功')
+        }
+    });
+});
+//新闻展示
+app.get('/news/display',(req,res) => {
+    const SELECT_NEWSDATA = `SELECT id, date,type,title,cover,content FROM article `;
+    db.query(SELECT_NEWSDATA,(err,result)=>{
+        if(err){
+            console.log("找新闻数据时出现错误")
+            return res.send(err)
+        }
+        else{
+            console.log("找新闻数据成功")
+            console.log(result);
+            return res.send(result);
+        }
+    });
+})
 //增加工作时间
 // app.get('/drivers/availabletime' , (req,res)=>{
 //     const {AvailableTime} = req.query;
